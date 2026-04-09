@@ -1,3 +1,5 @@
+const ext = (typeof browser !== 'undefined') ? browser : chrome;
+
 const btnGet    = document.getElementById('btn-get');
 const btnCopy   = document.getElementById('btn-copy');
 const output    = document.getElementById('output');
@@ -9,7 +11,7 @@ const footerTs  = document.getElementById('footer-ts');
 let currentJson = '';
 
 async function getActiveTabUrl() {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  const [tab] = await ext.tabs.query({ active: true, currentWindow: true });
   return tab?.url ?? null;
 }
 
@@ -19,19 +21,19 @@ async function fetchAllCookies(url) {
   let allCookies = [];
   
   try {
-    const byDomain = await chrome.cookies.getAll({ domain: cleanDomain });
+    const byDomain = await ext.cookies.getAll({ domain: cleanDomain });
     allCookies = allCookies.concat(byDomain);
   } catch (e) {}
   
   if (!cleanDomain.startsWith('www.')) {
     try {
-      const byWwwDomain = await chrome.cookies.getAll({ domain: 'www.' + cleanDomain });
+      const byWwwDomain = await ext.cookies.getAll({ domain: 'www.' + cleanDomain });
       allCookies = allCookies.concat(byWwwDomain);
     } catch (e) {}
   }
   
   try {
-    const byUrl = await chrome.cookies.getAll({ url });
+    const byUrl = await ext.cookies.getAll({ url });
     allCookies = allCookies.concat(byUrl);
   } catch (e) {}
   
@@ -39,7 +41,7 @@ async function fetchAllCookies(url) {
   if (parts.length > 2) {
     const rootDomain = '.' + parts.slice(-2).join('.');
     try {
-      const byRoot = await chrome.cookies.getAll({ domain: rootDomain });
+      const byRoot = await ext.cookies.getAll({ domain: rootDomain });
       allCookies = allCookies.concat(byRoot);
     } catch (e) {}
   }
